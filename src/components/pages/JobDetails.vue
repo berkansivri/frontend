@@ -54,6 +54,17 @@ export default {
 
       return `https://twitter.com/intent/tweet?text=${encoded.trim()}`;
     },
+    updatedAt() {
+      if (this.preview) {
+        return '';
+      }
+
+      return new Date(this.post.updated_at).toLocaleDateString('tr-TR', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+    },
   },
   methods: {
     ...mapActions(['fetchBySlug', 'fetchRelatedPosts']),
@@ -196,6 +207,13 @@ export default {
                 <div class="widget">
                   <div class="job-overview">
                     <ul>
+                      <li v-if="updatedAt">
+                        <i class="fa fa-calendar-check-o" />
+                        <div>
+                          <strong>Son Güncelleme</strong>
+                          <span>{{ updatedAt }}</span>
+                        </div>
+                      </li>
                       <li>
                         <i class="fa fa-calendar-check-o" />
                         <div>

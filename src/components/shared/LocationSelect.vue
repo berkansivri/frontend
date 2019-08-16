@@ -23,7 +23,6 @@ export default {
   data() {
     return {
       selected: null,
-      locations: null,
       options: [],
     };
   },
@@ -33,7 +32,20 @@ export default {
       this.$emit('input', value);
     },
     syncValue() {
-      if (this.value) this.selected = this.value;
+      if (this.value) {
+        this.selected = this.value;
+      }
+    },
+    searchChange(text) {
+      if (text.trim() === '') {
+        this.options = this.locations;
+
+        return;
+      }
+
+      this.options = this.locations.filter(
+        l => (l.toLocaleLowerCase('tr').indexOf(text.toLocaleLowerCase('tr')) > -1),
+      );
     },
     searchChange(text) {
       this.options = text.trim()
@@ -50,11 +62,11 @@ export default {
     },
   },
   created() {
-    this.fetchAvailableLocations().then(() => {
-      this.locations = this.showAll ? allLocations : this.$store.state.availableLocations;
-      this.options = this.locations;
-    });
     this.syncValue();
+    this.fetchAvailableLocations()
+      .then(() => {
+        this.options = this.locations;
+      });
   },
 };
 </script>
@@ -64,13 +76,13 @@ export default {
     :class="{ 'is-searchable': searchable }"
     v-model="selected"
     :options="options"
-    @search-change="searchChange"
-    :internal-search="false"
     :searchable="searchable"
     :close-on-select="true"
     :show-labels="false"
+    :internal-search="false"
     placeholder="Şehir seçiniz..."
     @input="handleChange"
+    @search-change="searchChange"
   >
     <div slot="noResult">
       Aramanızla eşleşen bir sonuç bulunamadı.
